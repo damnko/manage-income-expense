@@ -1,0 +1,907 @@
+<layout-use template="../template.marko">
+
+    <layout-put into="title">$data.title</layout-put>
+    <layout-put into="css">
+        <link href="vendor/pikaday/css/pikaday.css" rel="stylesheet">
+    </layout-put>
+
+    <layout-put into="body">
+    	<div class="container">
+    		<div class="row">
+    			<div class="col-md-12">
+    				<include template="../partials/header.marko" isAuth="$data.isAuth" title="$data.title"/>
+    			</div>
+    		</div>
+    		<div class="row">
+    			<div class="col-md-6">
+    				<button class="btn btn-block btn-success btn-block">Incasso</button>
+    			</div>
+    			<div class="col-md-6">
+    				<button class="btn btn-block btn-danger btn-block">Spesa</button>
+    			</div>
+    		</div>
+    		<div class="row">
+    			<div class="col-md-6">
+                    <!-- New category modal -->
+                    <div id="categoryModal" class="modal fade" tabindex="-1" role="dialog">
+                      <div class="modal-dialog">
+                        <div class="modal-content">
+                          <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                            <h4 class="modal-title">Aggiungi nuova categoria</h4>
+                          </div>
+                          <div class="modal-body">
+                            <form action="/login" method="get" id="newCategoryForm">
+                                <div class="alert alert-danger formErrors">
+                                    <ul>
+                                        <li>Errore form</li>
+                                        <li>Errore form</li>
+                                    </ul>
+                                </div>
+                                <div class="form-group">
+                                    <label for="exampleInputEmail1">Nome categoria</label>
+                                    <input type="input" class="form-control" name="name" placeholder="Categoria">
+                                  </div>
+                                  <div class="form-group">
+                                    <label for="exampleInputPassword1">Tags (separati da virgola)</label>
+                                    <input type="input" class="form-control" name="tags" placeholder="Tags">
+                                  </div>
+                                  <div class="form-group">
+                                    <label for="exampleInputPassword1">Detrazione (es. 0.5)</label>
+                                    <input type="input" class="form-control" name="detractionAmount" placeholder="Detrazione">
+                                  </div>
+                                  <div class="checkbox">
+                                      <label>
+                                        <input type="checkbox" name="beneStrumentale" value="true"> Bene strumentale
+                                      </label>
+                                  </div>
+                                  <button type="submit" class="btn btn-success">Aggiungi</button>
+                            </form>
+                          </div>
+                          <div class="modal-footer">
+                            <button type="button" class="btn btn-default btn-block" data-dismiss="modal">Close</button>
+                          </div>
+                        </div><!-- /.modal-content -->
+                      </div><!-- /.modal-dialog -->
+                    </div><!-- /.modal -->
+
+                    <!-- Edit transaction modal -->
+                    <div id="editTransModal" class="modal fade" tabindex="-1" role="dialog">
+                      <div class="modal-dialog">
+                        <div class="modal-content">
+                          <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                            <h4 class="modal-title">Modifica entry</h4>
+                          </div>
+                          <div class="modal-body">
+                            <!-- content here -->
+                          </div>
+                          <div class="modal-footer">
+                            <button type="button" class="btn btn-default btn-block" data-dismiss="modal">Close</button>
+                          </div>
+                        </div><!-- /.modal-content -->
+                      </div><!-- /.modal-dialog -->
+                    </div><!-- /.modal -->
+
+    				<form action="expense" method="post" id="expense">
+    					<h2>Aggiungi spesa</h2>
+                        <div class="alert alert-danger formErrors">
+                            <ul>
+                                <li>Errore form</li>
+                                <li>Errore form</li>
+                            </ul>
+                        </div>
+                        <div class="form-group">
+                            <label for="exampleInputEmail1">Importo</label>
+                            <input type="text" class="form-control" name="amount" placeholder="Importo">
+                        </div>
+                        <div class="form-group">
+                            <div class="form-group">
+                                <label for="exampleInputEmail1">Condiviso con...</label><br/>
+                                <input type="text" class="form-control" name="shared" id="nomeCondiviso" placeholder="nome">
+                            </div>
+                            <div class="sharedDett">
+                                <div class="form-group">
+                                    <label for="exampleInputEmail1">Paid by me</label>
+                                    <input type="text" class="form-control" name="paidByMe" value="0">
+                                </div>
+                                <div class="form-group">
+                                    <label for="exampleInputEmail1">Paid by other</label>
+                                    <input type="text" class="form-control" name="paidByOther" value="0">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="exampleInputEmail1">Descr</label>
+                            <textarea class="form-control" name="description" rows="3"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="exampleInputEmail1">Data</label>
+                            <input type="text" class="form-control" name="date" id="expenseDate" placeholder="Data">
+                        </div>
+                        <div class="form-group categoryWrap">
+                            <label for="exampleInputEmail1">Categoria</label><br/>
+                            <input type="text" class="form-control" name="category" id="category" placeholder="categoria">
+                        </div>
+                        <div class="form-group">
+                            <label for="exampleInputEmail1">Reale/Fake</label><br/>
+                            <div class="btn-group realFakeWrap" role="group" aria-label="...">
+                              <button type="button" data-type="real" class="btn btn-default btn-checkbox selected">Reale</button>
+                              <button type="button" data-type="fake" class="btn btn-default btn-checkbox">Simulazione</button>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <button class="btn btn-block btn-danger" type="submit">Aggiungi spesa</button>
+                        </div>
+    				</form>
+    			</div>
+    			<div class="col-md-6">
+    				<form action="income" method="post" id="income">
+    					<h2>Aggiungi incasso</h2>
+                        <div class="alert alert-danger formErrors">
+                            <ul>
+                                <li>Errore form</li>
+                                <li>Errore form</li>
+                            </ul>
+                        </div>
+                        <div class="form-group">
+                            <label for="exampleInputEmail1">Importo</label>
+                            <input type="text" class="form-control" name="amount" placeholder="Importo">
+                        </div>
+                        <div class="form-group">
+                            <label for="exampleInputEmail1">Data</label>
+                            <input type="text" class="form-control" name="date" id="incomeDate" placeholder="Data">
+                        </div>
+                        <div class="form-group">
+                            <label for="exampleInputEmail1">Descr</label>
+                            <textarea class="form-control" name="description" rows="3"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="exampleInputEmail1">Reale/Simulato</label><br/>
+                            <div class="btn-group" role="group" aria-label="...">
+                              <button type="button" data-type="real" class="btn btn-default btn-checkbox selected">Reale</button>
+                              <button type="button" data-type="fake" class="btn btn-default btn-checkbox">Simulazione</button>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <button class="btn btn-block btn-success" type="submit">Aggiungi incasso</button>
+                        </div>
+    				</form>
+    			</div>
+    		</div>
+    		<div class="row">
+    			<div class="col-md-12">
+                    <div class="filters">
+                        <form action="" method="get" id="filters">
+                            <div class="form-group">
+                                <label for="exampleInputEmail1">Anno</label>
+                                <select class="form-control" name="year">
+                                    <option for="year in data.years" value="${year.date}">${year.date}</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="exampleInputEmail1">nr of records to display</label>
+                                <input type="text" class="form-control" name="nr" placeholder="nr" value="5">
+                            </div>
+                        </form>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <button class="btn btn-block btn-danger outline" id="deleteFake">Delete all fake of current period</button>
+                        </div>
+                        <div class="col-md-6">
+                            <button class="btn btn-block btn-danger outline" id="deleteAllFake">Delete all fake</button>
+                        </div>
+                    </div>
+    				<table id="results" class="table table-striped">
+    					<thead>
+    						<tr>
+    							<td>Data</td>
+    							<td>Importo</td>
+    							<td>Categoria</td>
+    							<td>Descr</td>
+    							<td></td>
+    							<td></td>
+    						</tr>
+                            <tr class="sample">
+                                <td class="data">01/02/2015</td>
+                                <td class="amount">15.00€</td>
+                                <td class="category">Elettronica</td>
+                                <td class="description">Descrizione del tipo di acquisto...</td>
+                                <td class="sharedWith">
+                                    io: <span class="paidByMe"></span><br/>
+                                    <span class="name"></span>: <span class="paidByOther"></span>
+                                </td>
+                                <td class="realFake">sharedwith</td>
+                                <td><button class="btn btn-block btn-warning editTransaction">Modifica</button></td>
+                                <td><button class="btn btn-block btn-danger deleteTransaction">Elimina</button></td>
+                            </tr>
+    					</thead>
+    					<tbody>
+    						<tr>
+    							<td>01/02/2015</td>
+    							<td>15.00€</td>
+    							<td>Elettronica</td>
+    							<td>Descrizione del tipo di acquisto...</td>
+    							<td><button class="btn btn-block btn-warning">Modifica</button></td>
+    							<td><button class="btn btn-block btn-danger">Elimina</button></td>
+    						</tr>
+    					</tbody>
+    				</table>
+    			</div>
+    		</div>
+            <div class="row">
+                <div class="col-md-12">
+                    <nav>
+                      <ul class="pagination">
+                        <li class="pagPrev">
+                          <a href="#" aria-label="Previous">
+                            <span aria-hidden="true">&laquo;</span>
+                          </a>
+                        </li>
+                        <li>
+                          <a href="#" aria-label="Next">
+                            <span aria-hidden="true">&raquo;</span>
+                          </a>
+                        </li>
+                      </ul>
+                    </nav>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-4 summary-real">
+                    <h4>Real</h4>
+                    <strong>Income: </strong><span class="income"></span><br/>
+                    <strong>Expense: </strong><span class="expense"></span><br/>
+                    <strong>Cash Out: </strong><span class="cashOut"></span><br/>
+                    <strong>Balance: </strong><span class="balance"></span>
+                </div>
+                <div class="col-md-4 summary-fake">
+                    <h4>Fake only</h4>
+                    <strong>Income: </strong><span class="income"></span><br/>
+                    <strong>Expense: </strong><span class="expense"></span><br/>
+                    <strong>Cash Out: </strong><span class="cashOut"></span><br/>
+                    <strong>Balance: </strong><span class="balance"></span>
+                </div>
+                <div class="col-md-4 summary-realFake">
+                    <h4>Real+Fake</h4>
+                    <strong>Income: </strong><span class="income"></span><br/>
+                    <strong>Expense: </strong><span class="expense"></span><br/>
+                    <strong>Cash Out: </strong><span class="cashOut"></span><br/>
+                    <strong>Balance: </strong><span class="balance"></span>
+                </div>
+            </div>
+    	</div>
+		
+
+    </layout-put>
+
+    <layout-put into="custom-js">
+        <script src="/vendor/moment.js"></script>
+        <script src="/vendor/pikaday/pikaday.js"></script>
+        <script src="/vendor/typeahead.bundle.min.js"></script>
+        <script src="vendor/validate/validate.min.js"></script>
+        <script>
+            $(function(){
+
+                // TYPEAHEAD SUGGESTIONS HANDLERS
+                // shared with
+                var names = new Bloodhound({
+                  datumTokenizer: Bloodhound.tokenizers.obj.whitespace('name'),
+                  queryTokenizer: Bloodhound.tokenizers.whitespace,
+                  remote: {
+                    url: '/finance/sharer/%QUERY.json',
+                    wildcard: '%QUERY'
+                  }
+                });
+                $('#nomeCondiviso').typeahead({
+                  hint: true,
+                  highlight: true,
+                  minLength: 1
+                },
+                {
+                  name: 'merda',
+                  display: 'name',
+                  source: names,
+                  templates: {
+                    header: showTooltip,
+                    notFound: showTooltip
+                  }
+                });
+
+                // devo usare questo altrimenti quando nel box non c'e' scritto nulla il typeahead non viene nemmeno chiamato, e mi serve per nascondere i campi relativi agli importi condivisi
+                $('#nomeCondiviso').on('keyup', function(ev){
+                    if ($(this).val() === ''){
+                        var sample = {
+                            query: ''
+                        }
+                        showTooltip(sample);
+                    }
+                })
+                // funzione per capire se ci sono suggestions uguali alla query digitata, nel caso non ci fossero viene mostrato un tooltip che dice che il nome digitato verra' aggiunto
+                // la funzione viene chiamata dal templates:{} e non da .on(event) perche' e' l'unico modo per farla triggerare ad ogni tasto premuto
+                function showTooltip(data){
+                    var exists = false;
+                    
+                    if (data.query.trim() !== ''){
+                        var halfAmount = parseFloat($('#expense [name="amount"]').val())/2;
+                        $('#expense [name="paidByMe"], #expense [name="paidByOther"]').val(function(){
+                            return halfAmount;
+                        });
+                        $('.sharedDett').slideDown(150);
+                    }else{
+                        $('.sharedDett').slideUp(150);
+                        return $('#expense [name="paidByMe"], #expense [name="paidByOther"]').val('0');
+                    }
+
+                    if (data.suggestions){
+                        for (var i=0; i<data.suggestions.length; i++){
+                            if (data.query.trim() === data.suggestions[i].name){
+                                exists = true;
+                            }
+                        }
+                    }
+                    if (!exists){
+                        $('#nomeCondiviso').tooltip({
+                            title: data.query + ' verra aggiunto'
+                        })
+                        $('#nomeCondiviso').tooltip('show');
+                        setTimeout(function(){
+                            $('#nomeCondiviso').tooltip('destroy');
+                        }, 1500);
+                    }
+                    return '';
+                }
+
+                // categories
+                var categories = new Bloodhound({
+                  datumTokenizer: Bloodhound.tokenizers.obj.whitespace('name'),
+                  queryTokenizer: Bloodhound.tokenizers.whitespace,
+                  remote: {
+                    url: '/finance/category/%QUERY.json',
+                    wildcard: '%QUERY',
+                    // devo usare questa funzione per modificare la stringa che viene mandata lato server per mostrare i risultati del typeahead
+                    prepare: function(query, settings){
+                        // appena clicco sulla casella il suo contenuto e' vuoto, quindi il server darebbe errore perche' viene chiamato /finance/category/.json allora io forzo la scritta showmeeverythingyougot.json e lato server faccio in modo di usare questa stringa per inviare una ricerca con nome vuoto in modo da mostrare tutti i record che ci sono 
+                        var newQ = (query.trim() === '') ? 'showmeeverythingyougot' : query;
+                        // la funzione deve ritornare un settings fatto cosi
+                        var settings = {
+                            url: "/finance/category/" + newQ + ".json",
+                            type: "GET",
+                            dataType: "json"
+                        }
+                        return settings;
+                    }
+                  }
+                });
+                $('#category').typeahead({
+                  hint: true,
+                  highlight: true,
+                  // le categories le faccio vedere appena uno mette il mouse sopra
+                  minLength: 0
+                },
+                {
+                  name: 'category',
+                  display: function (data){
+                    // potrei ritornare anche una cosa piu' complessa, che pero' diventerebbe il mio value della inputbox es.
+                    // return data.name + '(' + data.detractionAmount + ')';
+                    return data.name;
+                  },
+                  source: categories,
+                  templates: {
+                    // se notFound fa vedere un entry che chiede di aggiungere quel nome a categoria
+                    notFound: function(data){
+                        return '<div id="newCategory" class="tt-suggestion"><i class="fa fa-plus-square-o"></i> Aggiungi categoria <strong>' + data.query + '</strong></div>';
+                    },
+                    suggestion: function (data){
+                        return '<div><strong>' + data.name + '</strong> (-' + data.detractionAmount*100 + '%)</div>'
+                    },
+                    header: function(data){
+                        // se quanto scritto nella inputbox coincide con l'unico suggerimento dato, vuol dire che ha scritto il nome esatto di una categoria, quindi non mostro il messaggio di inserimento nuova categoria
+                        if (data.suggestions.length === 1 && data.suggestions[0].name === data.query){
+                            return '';
+                        }else{
+                            return '<div id="newCategory" class="tt-suggestion"><i class="fa fa-plus-square-o"></i> Aggiungi categoria <strong>' + data.query + '</strong></div>';
+                        }
+                    }
+                  }
+
+                });
+
+                // addNewCategory typeahead button handler
+                $('.categoryWrap').on('click', '#newCategory', function(ev){
+                    var target = $('#categoryModal');
+                    target.find('[name="name"]').val(function(){
+                        return $("#category").val();
+                    });
+                    target.modal('show');
+                    
+                })
+                // triggers on categoryModal hide and show complete
+                $('#categoryModal').on('hidden.bs.modal', function (e) {
+                    $('#newCategoryForm').find(':submit')
+                                    .removeClass('disabled')
+                                    .removeClass('btn-warning')
+                                    .addClass('btn-default')
+                                    .text('Aggiungi');
+                }).on('shown.bs.modal', function(e){
+                    $(this).find('[name="tags"]').focus();
+                })
+
+
+
+                // FORM VALIDATIONS
+                var presenceMsg = 'obbligatoria';
+                // category
+                var categoryCheck = {
+                  name: {
+                    presence: {
+                        message: presenceMsg
+                    }
+                  },
+                  detractionAmount: {
+                    presence: {
+                        message: presenceMsg
+                    },
+                    numericality: {
+                        greaterThan: 0,
+                        notGreaterThan: 'Il valore deve essere maggiore di 0',
+                        lessThanOrEqualTo: 1,
+                        notLessThanOrEqualTo: 'Il valore deve essere uguale o inferiore a 1'
+                    }
+                  }
+                };
+
+                // new category validation
+                $('#newCategoryForm').on('submit', function(ev){
+                    ev.preventDefault();
+                    handleFormSubmit(this,categoryCheck);
+                });
+
+                // Check for errors on the form
+                function handleFormSubmit(form, validation){
+                    var errors = validate(form, validation);
+                    var formElement = $('#' + form.id);
+                    if (!errors)
+                        showSuccess(formElement);
+                    else
+                        showErrors(formElement, errors);
+                }
+
+                // Show errors 
+                function showErrors(formElement, errors){
+                    console.log('found errors in form');
+                    // Clean the form from errors
+                    cleanForm(formElement);
+                    // Attach new errors
+                    appendErrors(formElement, errors);
+                }
+
+                // Append errors to form
+                function appendErrors(formElement, errors){
+                    // Cycle all errors
+                    for (error in errors){
+                        // Add error class to form-group
+                        var formGroup = formElement.find('[name="' + error +'"]').closest('.form-group');
+                        formGroup.addClass('has-error');
+
+                        // Cycle through the errors and attach error span
+                        var errArr = errors[error];
+                        var errEl = '<span class="help-block"><ul><li>' + errArr.join('</li><li>') + '</li></ul></span>';
+                        formGroup.append(errEl);
+
+                        console.log('aggiunto errore a ' + error + ' il valore sarebbe ' + errors[error]);
+                    }
+                }
+
+                // Removes errors and classes from form
+                function cleanForm(formElement){
+                    // Remove all error styles
+                    formElement.find('.has-error').removeClass('has-error');
+                    // Remove all error messages
+                    formElement.find('.help-block').remove();
+                }
+
+                function showSuccess(formElement){
+                    cleanForm(formElement);
+                    // Send the form to server
+                    var initialText = formElement.find(':submit').text();
+
+                    $.ajax({
+                        url: '/finance/add-category',
+                        type: 'post',
+                        dataType: 'json',
+                        data: {
+                            name: formElement.find('[name="name"]').val(),
+                            // anche se tags lo invio cosi, poi lato server su req.body viene visto come tags[] perche' di fatto e' un array
+                            tags: formElement.find('[name="tags"]').val()
+                                    .split(',')
+                                    .map(function (el){
+                                        return el.trim()
+                                    }),
+                            detractionAmount: formElement.find('[name="detractionAmount"]').val()
+                        },
+                        beforeSend: function(){
+                            formElement.find('.formErrors').hide();
+                            formElement.find(':submit')
+                                .addClass('disabled')
+                                .removeClass('btn-default')
+                                .addClass('btn-warning')
+                                .text('Elaborazione in corso...');
+                        },
+                        success: function(json){
+                            console.log('json risposta ajax', json);
+                            // Check for errors
+                            if (json.errors){
+                                // Append error messages
+                                formElement.find('.formErrors ul').html('<li>' + json.errors.join('</li><li>') + '</li>');
+                                // Show error div
+                                formElement.find('.formErrors').slideDown();
+                                    
+                                return false;
+                            }
+                            formElement.find(':submit').text('Ok categoria aggiunta');
+                            // hide the modal after 1s
+                            setTimeout(function(){
+                                $('#categoryModal').modal('hide');
+                            }, 1000);
+
+
+                        }
+                    })
+                }
+
+
+
+
+                // IMPORTANTE: CAPIRE COME SCRIVERE JS A MODULI
+                // LINK UTILI:
+                // https://hckr.news/javascript-module-pattern-lets-handle-dom-events/
+                // https://addyosmani.com/largescalejavascript/
+                // https://addyosmani.com/largescalejavascript/
+
+                
+
+
+
+                var loading = {
+                    start: function(target){
+                        $(target).append('<div id="overlay"><img id="loading" src="http://bit.ly/pMtW1K"></div>');
+                    },
+                    end: function(target){
+                        $(target).find('#overlay').remove();
+                    }
+                }
+
+
+                function findVal(parent, name){
+                    return parent.find('[name="' + name + '"]').val();
+                }
+
+                function serializeToObj(arr){
+                    var values = {};
+                    for (obj in arr){
+                        var name = arr[obj].name;
+                        var value = arr[obj].value;
+                        values[name] = value;
+                    }
+                    return values;
+                }
+                
+                // Fancy checkbox handler, adds selected class to pressed button
+                $('.btn-checkbox').on('click', function(ev){
+                    $(this).parent().find('.btn-checkbox').removeClass('selected');
+                    $(this).addClass('selected');
+                });
+
+                // Calculates the difference when each sharer has different amount of money
+                $('#expense [name="paidByMe"], #expense [name="paidByOther"]').on('blur', function(ev){
+                    var changed = $(this).attr('name');
+                    var newVal = $(this).val();
+                    var el = [];
+                    $('.sharedDett .form-group').each(function(id,val){
+                        el.push($(this).find('input').attr('name'));
+                    });
+                    var pos = el.indexOf(changed);
+                    el.splice(pos,1);
+                    el.forEach(function(input){
+                        $('.sharedDett [name="' + input + '"]').val(function(){
+                            var amount = $('#expense [name="amount"]').val();
+                            return (amount-newVal)/el.length;
+                        });
+                    })
+                })
+
+                // Datepicker init
+                var incomePicker = new Pikaday({ field: document.getElementById('incomeDate') });
+                var expensePicker = new Pikaday({ field: document.getElementById('expenseDate') });
+
+                // Form submit handler
+                $('#income, #expense').on('submit', function(ev){
+                    console.log('inviando form');
+                    ev.preventDefault();
+                    var form = $(this);
+                    var initialText = form.find(':submit').text();
+
+                    var formsVal = serializeToObj(form.serializeArray());
+                    formsVal.type = $(this).find('.btn-checkbox.selected').data().type;
+                    console.log('formsVal', formsVal);
+
+                    $.ajax({
+                        url: '/finance/' + form.attr('action'),
+                        type: 'POST',
+                        dataType: 'json',
+                        data: formsVal,
+                        beforeSend: function(){
+                            form.find(':submit').text('...');
+                            form.find('.formErrors').hide();
+                            console.log('sending income request');
+                        },
+                        success: function(json){
+                            if (!json.errors){
+                                form.find(':submit').text('OK');
+                            }else{
+                                form.find(':submit').text('Errore');
+                                // Append error messages
+                                form.find('.formErrors ul').html('<li>' + json.errors.join('</li><li>') + '</li>');
+                                // Show error div
+                                form.find('.formErrors').slideDown();
+                            }
+                            setTimeout(function(){
+                                form.find(':submit').text(initialText);
+                                $('#editTransModal').modal('hide');
+                            }, 1000);
+                            console.log(json);
+                        }
+                    })
+                });
+
+                $('#filters select, #filters input').on('change', function(ev){
+                    console.log('select changed');
+                    //ev.preventDefault();
+                    triggerSearch(this);
+                });
+
+                $('#filters select').trigger('change');
+
+                function triggerSearch(el){
+                    var form = $(el).closest('form');
+                    var formsVal = serializeToObj(form.serializeArray());
+                    console.log('formsVal', formsVal);
+                    $.ajax({
+                        url: '/finance/get-results',
+                        type: 'get',
+                        dataType: 'json',
+                        data: formsVal,
+                        beforeSend: function(){
+                            console.log('inviando...');
+                            loading.start(form);
+                        },
+                        success: function(json){
+                            console.log('result filtro', json);
+                            showResults(json.transactions);
+                            printSummary(json.means);
+                            showPagination(json.count, form.find('[name="nr"]').val());
+                            loading.end(form);
+                        }
+                    })
+                }
+
+                function showPagination(count,limit){
+                    if (limit<count){
+                        $('.pagination .dyn').remove();
+                        var pages = Math.ceil(count/limit);
+                        var pagHtml = '';
+                        for (var i=1;i<=pages;i++){
+                            pagHtml += '<li class="dyn"><a href="#">' + i + '</a></li>';
+                        }
+                        $('.pagination .pagPrev').after(pagHtml);
+                        $('.pagination').show();
+                    }
+                    else
+                        $('.pagination').hide();
+                }
+
+                // Handle pagination
+                $('.pagination').on('click', '.dyn', function(ev){
+                    ev.preventDefault();
+
+                    var page = $(this).text();
+                    var form = $('#filters');
+                    var formsVal = serializeToObj(form.serializeArray());
+                    formsVal.page = page;
+
+                    $.ajax({
+                        url: '/finance/change-page',
+                        type: 'get',
+                        dataType: 'json',
+                        data: formsVal,
+                        beforeSend: function(){
+                            console.log('cambiando pagina...');
+                        },
+                        success: function(json){
+                            console.log('json post cambio pagina:', json);
+                            // Only the table gets updated, not the transactions summary
+                            showResults(json.transactions);
+                        }
+                    });
+                });
+
+                function showResults(results){
+                    // Get sample row
+                    // var row = $('#results .sample').clone();
+                    var final = '';
+                    results.forEach(function(result){
+                        var row = $('#results .sample').clone();
+                        row.find('.data').text(moment(result.date).format('dd DD MMM YYYY'));
+                        row.find('.amount').text(result.amount);
+                        row.find('.category').text(result.category);
+                        row.find('.description').text(result.description);
+                        row.find('.sharedWith').text(function(){
+                            if ('shared' in result){
+                                if ('shared' in result && result.shared.name === '')
+                                    return '';
+                                row.find('.sharedWith .paidByMe').text(result.shared.paidByMe);
+                                row.find('.sharedWith .name').text(result.shared.name);
+                                row.find('.sharedWith .paidByOther').text(result.shared.paidByOther);
+                            }else
+                                return '';
+                        });
+                        row.find('.realFake').text(result.type);
+                        final += '<tr data-transID="' + result._id + '">';
+                        final += row.html();
+                        final += '</tr>';
+                    });
+                    $('#results tbody').html(final);
+                }
+
+                function printSummary(means){
+                    var type = ['real', 'fake', 'realFake'];
+                    // Print summary for realOnly and fakeOnly transactions
+                    type.forEach(function(type){
+                        var target = $('.summary-' + type);
+                        target.find('.income').text(means[type].income);
+                        target.find('.expense').text(means[type].expense);
+                        target.find('.cashOut').text(means[type].cashOut);
+                        target.find('.balance').text(means[type].income+means[type].expense);
+                    })
+                }
+
+                // Handle remove fake
+                $('#deleteFake, #deleteAllFake').on('click', function(e){
+                    var target = $(this);
+                    var originalText = target.text();
+
+                    // period viene preso solo se deleteFake, altrimenti sono da eliminare tutti gli anni
+                    if (this.id === 'deleteFake')
+                        var period = $('#filters select[name="year"]').val();
+                    else
+                        var period = ''
+
+                    $.ajax({
+                        url: '/finance/deleteFake',
+                        type: 'post',
+                        dataType: 'json',
+                        data: {
+                            period: period
+                        },
+                        beforeSend: function(){
+                            target.text('...deleting');
+                        },
+                        success: function(json){
+                            if (!json.errors){
+                                target.text('OK elementi eliminati');
+                                // trigger a result refresh
+                                $('#filters select').trigger('change');
+                                setTimeout(function() {
+                                    target.text(originalText);
+                                }, 1000);
+                            }
+                        }
+                    })
+                })
+
+                // Handle remove transaction
+                $('#results').on('click', '.deleteTransaction', function(ev){
+                    var row = $(this).closest('tr');
+                    var id = row.data().transid;
+                    var el = $(this);
+                    $.ajax({
+                        url: '/finance/deleteTransaction',
+                        type: 'post',
+                        dataType: 'json',
+                        data: {
+                            id: id
+                        },
+                        beforeSend: function(){
+                            el.text('...')
+                        },
+                        success: function(json){
+                            row.hide(500, function(){
+                                $(this).remove();
+                            });
+                        }
+                    });
+                });
+
+                // reset form
+                function resetForm(form){
+                    form.find('input, textarea').val('');
+                    form.find('.sharedDett').hide();
+                }
+
+                // Handle edit transaction
+                var originalTarget;
+                $('#results').on('click', '.editTransaction', function(ev){
+                    var id = $(this).closest('tr').data().transid;
+                    var target = $(this);
+                    var originalText = target.text();
+                    // get transaction details
+                    $.ajax({
+                        url: '/finance/getDetails',
+                        dataType: 'json',
+                        type: 'get',
+                        data: {
+                            id: id
+                        },
+                        beforeSend: function(){
+                            target.text('...');
+                        },
+                        success: function(res){
+                            console.log('response: ', res);
+                            target.text(originalText);
+                            // controllo se e' income o expense
+                            if (res.amount > 0){
+                                var form = '#income';                                
+                            }
+                            else{
+                                var form = '#expense';
+                                // controllo se la spesa e' condivisa
+                                if (res.shared.name != ''){
+                                    $(form + ' [name="shared"]').val(res.shared.name);
+                                    $(form + ' [name="paidByMe"]').val(res.shared.paidByMe);
+                                    $(form + ' [name="paidByOther"]').val(res.shared.paidByOther);
+                                    $(form + ' .sharedDett').slideDown(150);
+                                }
+                                $(form + ' [name="category"]').val(res.category[0]);
+                            }
+                            $(form + ' [name="amount"]').val( Math.abs(res.amount) );
+                            $(form + ' [name="description"]').val( res.description );
+                            // realfake
+                            $(form + ' .realFakeWrap button').removeClass('selected');
+                            $(form + ' .realFakeWrap [data-type="' + res.type + '"]').addClass('selected');
+                            // date
+                            $(form + ' [name="date"]').val( moment(res.date).format('YYYY-MM-DD') );
+
+                            // in questo caso rimuovo il form dalla pagina senza fare il .clone() o prenderne l'html perche' altrimenti avrei un duplicato con lo stesso #id, avrei dovuto usare le classi per gestire quel form invece ho sempre usato l'#id e adesso non ho voglia di cambiare tutto il codice relativo
+                            // inserisco un placeholder prima del form che rimuovo dal body, cosi lo posso usare poi per identificare da dove era stato "staccato" il form
+                            $(form).before('<div id="formHolder"></div>');
+                            var source = $(form).detach();
+                            // change the form target url
+                            originalTarget = source.attr('action');
+                            source.attr('action','editTransaction');
+                            // append the id hidden input
+                            source.append('<input type="hidden" value="' + res._id + '" name="id">');
+                            $('#editTransModal .modal-body').append( source );
+                            $('#editTransModal').modal('show');
+                        }
+                    })
+                });
+                $('#editTransModal').on('hidden.bs.modal', function(ev){
+                    resetForm($(this).find('form'));
+                    var source = $(this).find('form').detach();
+                    // delete the temporary id field
+                    source.remove('[name="id"]');
+                    // append to original place
+                    $('#formHolder').after( source );
+                    $('#formHolder').remove();
+                })
+                $('#editTransModal').on('shown.bs.modal', function(ev){
+                    $(this).find('[name="amount"]').focus();
+                })
+
+            })
+        </script>
+    </layout-put>
+
+</layout-use>

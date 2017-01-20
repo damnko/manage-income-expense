@@ -1,0 +1,111 @@
+.formErrors, .sharedDett, #results .sample{
+	display: none;
+}
+.btn-checkbox.selected{
+	background-color: #798D8F;
+}
+.table.summary{
+	margin: 0;
+}
+.summary p{
+	text-align: right;
+}
+.summary tr{
+	border-bottom: 1px solid black;
+}
+.summary td{
+    position: relative;
+}
+.summary .in{
+	background-color: #F0FFEF;
+	border-bottom-color: #57BB50;
+}
+.summary .out{
+	background-color: #FFEFEF;
+	border-bottom-color: #BB5050;
+}
+.summary .res{
+	background-color: #EAF9FF;
+	border-bottom-color: #fff;
+}
+.summary .diff{
+    font-size: 14px;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+}
+.realSave, .realFakeSave{
+    font-size: 20px;
+    text-shadow: 1px 1px 0 #1BA288;
+    text-align: center;
+}
+.progress{
+    height: 30px;
+}
+.progress .progress-bar {
+    font-size: 20px;
+    line-height: 30px;
+}
+.outline{
+    background-color: #fff;
+}
+.outline.btn-danger{
+    color: #d62c1a;
+}
+.outline.btn-danger:hover{
+    color: #fff;
+}
+/* loading overlay */
+#overlay {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    background: #000;
+    opacity: 0.8;
+    filter: alpha(opacity=80);
+}
+#loading {
+    width: 50px;
+    height: 57px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin: -28px 0 0 -25px;
+}
+
+/* typeahead styling start */
+/* overlay che si apre e contiene i risultati */
+.tt-menu{
+    width: 100%;
+    background-color: #F5F2F2;
+    border-radius: 5px;
+    -webkit-box-shadow: 0 0 10px 0 rgba(1,1,1,.1);
+    box-shadow: 0 0 10px 0 rgba(1,1,1,.1);
+}
+/* il singolo record/suggerimento */
+.tt-suggestion{
+    cursor: pointer;
+    border-bottom: 1px solid #E0E0E0;
+    padding: 10px;
+}
+.tt-suggestion:hover, .tt-suggestion.tt-cursor{
+    background-color: #18BC9C;
+    color: #fff;
+}
+/* testo normale scritto nella inputbox */
+.tt-input{
+    
+}
+/* testo autocompletato scritto nella inputbox */
+.tt-hint{
+    color: #B0B1B1;
+}
+#newCategory{
+    background-color: #FDFCFC;
+    color: #18BC9C;
+}
+/* typeahead styling en d*/

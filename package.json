@@ -1,0 +1,26 @@
+{
+  "name": "009-detrazioni-piva",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "start": "node ./bin/www"
+  },
+  "dependencies": {
+    "body-parser": "~1.13.2",
+    "cookie-parser": "~1.3.5",
+    "debug": "~2.2.0",
+    "express": "~4.13.1",
+    "jade": "~1.11.0",
+    "morgan": "~1.6.1",
+    "serve-favicon": "~2.3.0",
+    "connect-flash": "~0.1.1",
+    "passport": "~0.3.2",
+    "mongodb": "~2.1.4",
+    "marko": "~2.8.2",
+    "express-validator": "~2.19.0",
+    "bcrypt": "~0.8.5",
+    "async": "~1.5.2",
+    "passport-local": "~1.0.0",
+    "express-session": "~1.13.0"
+  }
+}

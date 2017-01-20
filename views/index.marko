@@ -1,0 +1,251 @@
+<layout-use template="./template.marko">
+
+    <layout-put into="title">$data.title</layout-put>
+
+    <layout-put into="body">
+		<div class="container">
+			<div class="row">
+				<div class="col-md-12">
+					<h1>Stima costi p.iva</h1>
+					<p>Programmino di prova per provare le funzionalita' di express e stimare le spese di una p.iva regime dei minimi.</p>
+					<button class="btn btn-block btn-success" data-toggle="modal" data-target="#login">Login</button>
+					<button class="btn btn-block btn-default" data-toggle="modal" data-target="#register">Registrati</button>
+
+					<!-- Login modal -->
+					<div id="login" class="modal fade" tabindex="-1" role="dialog">
+					  <div class="modal-dialog">
+					    <div class="modal-content">
+					      <div class="modal-header">
+					        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+					        <h4 class="modal-title">Login</h4>
+					      </div>
+					      <div class="modal-body">
+					        <form action="/login" method="get" id="loginForm">
+					        	<div class="alert alert-danger formErrors">
+					        		<ul>
+					        			<li>Errore form</li>
+					        			<li>Errore form</li>
+					        		</ul>
+					        	</div>
+					        	<div class="form-group">
+					        	    <label for="exampleInputEmail1">Email address</label>
+					        	    <input type="email" class="form-control" id="email" name="email" placeholder="Email">
+					        	  </div>
+					        	  <div class="form-group">
+					        	    <label for="exampleInputPassword1">Password</label>
+					        	    <input type="password" class="form-control" id="password" name="password" placeholder="Password">
+					        	  </div>
+					        	  <button type="submit" class="btn btn-success">Login</button>
+					        </form>
+					      </div>
+					      <div class="modal-footer">
+					        <button type="button" class="btn btn-default btn-block" data-dismiss="modal">Close</button>
+					      </div>
+					    </div><!-- /.modal-content -->
+					  </div><!-- /.modal-dialog -->
+					</div><!-- /.modal -->
+
+					<!-- Register modal -->
+					<div id="register" class="modal fade" tabindex="-1" role="dialog">
+					  <div class="modal-dialog">
+					    <div class="modal-content">
+					      <div class="modal-header">
+					        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+					        <h4 class="modal-title">Registrazione</h4>
+					      </div>
+					      <div class="modal-body">
+					        <form action="/register" method="post" id="registrationForm">
+					        	<div class="alert alert-danger formErrors">
+					        		<ul>
+					        			<li>Errore form</li>
+					        			<li>Errore form</li>
+					        		</ul>
+					        	</div>
+					        	<div class="form-group">
+					        	    <label for="exampleInputEmail1">Email address</label>
+					        	    <input type="email" class="form-control" id="email" name="email" placeholder="Email">
+					        	  </div>
+					        	  <div class="form-group">
+					        	    <label for="exampleInputEmail1">Conferma email address</label>
+					        	    <input type="email" class="form-control" id="emailControl" name="emailControl" placeholder="Email">
+					        	  </div>
+					        	  <div class="form-group">
+					        	    <label for="exampleInputPassword1">Password</label>
+					        	    <input type="password" class="form-control" id="password" name="password" placeholder="Password">
+					        	  </div>
+					        	  <button type="submit" class="btn btn-success">Registrati</button>
+					        </form>
+					      </div>
+					      <div class="modal-footer">
+					        <button type="button" class="btn btn-default btn-block" data-dismiss="modal">Close</button>
+					      </div>
+					    </div><!-- /.modal-content -->
+					  </div><!-- /.modal-dialog -->
+					</div><!-- /.modal -->
+
+				</div>
+			</div>
+		</div>
+    </layout-put>
+
+    <layout-put into="custom-js">
+    	<!-- Form validation -->
+		<script src="vendor/validate/validate.min.js"></script>
+		<script>
+			var presenceMsg = 'obbligatoria';
+			var registration = {
+			  email: {
+			    presence: {
+					message: presenceMsg
+			    },
+			    email: {
+			    	message: "L'email non sembra essere valida"
+			    }
+			  },
+			  emailControl: {
+			  	presence: {
+					message: presenceMsg
+			    },
+			    equality: {
+			    	attribute: 'email',
+			    	message: 'Le due email non sono uguali'
+			    }
+			  },
+			  password: {
+			  	presence: {
+					message: presenceMsg
+			    },
+			  	length: {
+			  		minimum: 8,
+			  		tooShort: "La password deve essere di almeno %{count} caratteri"
+			  	}
+			  }
+			};
+			var login = {
+			  email: {
+			    presence: {
+					message: presenceMsg
+			    }
+			  },
+			  password: {
+			  	presence: {
+					message: presenceMsg
+			    }
+			  }
+			};
+
+			// Registration validation
+			$('#registrationForm').on('submit', function(ev){
+				ev.preventDefault();
+				handleFormSubmit(this,registration);
+			});
+			// Login validation
+			$('#loginForm').on('submit', function(ev){
+				ev.preventDefault();
+				handleFormSubmit(this,login);
+			});
+
+			// Check for errors on the form
+			function handleFormSubmit(form, validation){
+				var errors = validate(form, validation);
+				var formElement = $('#' + form.id);
+				if (!errors)
+					showSuccess(formElement);
+				else
+					showErrors(formElement, errors);
+
+				console.log(errors);
+			}
+
+			// Show errors 
+			function showErrors(formElement, errors){
+				console.log('found errors in form');
+				// Clean the form from errors
+				cleanForm(formElement);
+				// Attach new errors
+				appendErrors(formElement, errors);
+			}
+
+			// Append errors to form
+			function appendErrors(formElement, errors){
+				// Cycle all errors
+				for (error in errors){
+					// Add error class to form-group
+					var formGroup = formElement.find('[name="' + error +'"]').closest('.form-group');
+					formGroup.addClass('has-error');
+
+					// Cycle through the errors and attach error span
+					var errArr = errors[error];
+					var errEl = '<span class="help-block"><ul><li>' + errArr.join('</li><li>') + '</li></ul></span>';
+					formGroup.append(errEl);
+
+					console.log('aggiunto errore a ' + error + ' il valore sarebbe ' + errors[error]);
+				}
+			}
+
+			// Removes errors and classes from form
+			function cleanForm(formElement){
+				// Remove all error styles
+				formElement.find('.has-error').removeClass('has-error');
+				// Remove all error messages
+				formElement.find('.help-block').remove();
+			}
+
+			// Form submit handle
+			function showSuccess(formElement){
+				console.log('no errors in form');
+
+				cleanForm(formElement);
+				// Send the form to server
+				var initialText = formElement.find(':submit').text();
+				$.ajax({
+					url: formElement.attr('action'),
+					type: 'POST',
+					data: {
+						email: formElement.find('[name="email"]').val(),
+						password: formElement.find('[name="password"]').val()
+					},
+					dataType: 'json',
+					beforeSend: function(){
+						formElement.find('.formErrors').hide();
+						formElement.find(':submit')
+							.addClass('disabled')
+							.removeClass('btn-default')
+							.addClass('btn-warning')
+							.text('Registrazione in corso...');
+					},
+					success: function(json){
+						console.log('json risposta ajax', json);
+						// Check for errors
+						if (json.errors){
+							// Append error messages
+							formElement.find('.formErrors ul').html('<li>' + json.errors.join('</li><li>') + '</li>');
+							// Show error div
+							formElement.find('.formErrors').slideDown();
+								
+							formElement.find(':submit')
+								.removeClass('disabled')
+								.removeClass('btn-warning')
+								.addClass('btn-default')
+								.text(initialText);
+							return false;
+						}
+						// Restore previous text
+						formElement.find(':submit').text('Redirecting to personal page...');
+						location.assign('/finance');
+						// window.location('/personalArea');
+					},
+					error: function(xh,status,error){
+						console.log('error xh', xh);
+						// xh.status = 401 = login fallito
+						console.log('error status', status);
+						console.log('error error', error);
+					}
+				})
+
+				console.log('form completato');
+			}
+		</script>
+    </layout-put>
+
+</layout-use>
